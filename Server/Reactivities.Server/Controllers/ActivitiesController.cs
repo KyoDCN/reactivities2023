@@ -1,31 +1,46 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using Reactivities.Persistence;
+﻿using Microsoft.AspNetCore.Mvc;
+using Reactivities.Application.Activities;
 
 namespace Reactivities.Server.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class ActivitiesController : ControllerBase
+    public class ActivitiesController : BaseController
     {
-        private readonly DataContext _context;
-
-        public ActivitiesController(DataContext context)
-        {
-            _context = context;
-        }
-
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            return Ok(await _context.Activities.ToListAsync());
+            var query = new Activities.Queries.GetAll();
+            return Ok(await Mediator.Send(query));
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok(await _context.Activities.FindAsync(id));
+            var query = new Activities.Queries.Get() { Id = id };
+            return Ok(await Mediator.Send(query));
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(Activities.Commands.Create command)
+        {
+            await Mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Update(Activities.Commands.Update command)
+        {
+            await Mediator.Send(command);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var command = new Activities.Commands.Delete() { Id = id };
+            await Mediator.Send(command);
+            return Ok();
         }
     }
 }

@@ -1,24 +1,11 @@
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Storage;
-using Reactivities.Persistence;
-using Reactivities.Server.Extensions;
+using Reactivities.Server.Core.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<DataContext>();
-
-builder.Services.AddCors(o =>
-{
-    o.DefaultPolicyName = "default";
-    o.AddDefaultPolicy(policy =>
-    {
-        policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyOrigin();
-    });
-});
+builder.Services.AddApplicationServices(builder.Configuration);
 
 var app = builder.Build();
 
@@ -36,11 +23,8 @@ if (!app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
-
 app.UseAuthorization();
-
 app.MapControllers();
-
 app.UseCors();
 
 app.Run();

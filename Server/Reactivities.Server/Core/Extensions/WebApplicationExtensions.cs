@@ -2,7 +2,7 @@
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
-namespace Reactivities.Server.Extensions
+namespace Reactivities.Server.Core.Extensions
 {
     public static class WebApplicationExtensions
     {
@@ -37,7 +37,7 @@ namespace Reactivities.Server.Extensions
             return app;
         }
 
-        public static WebApplication SeedTestData(this  WebApplication app)
+        public static WebApplication SeedTestData(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
             using var context = scope.ServiceProvider.GetRequiredService<DataContext>();

@@ -6,6 +6,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
+builder.Services.AddCors(x =>
+{
+    x.AddPolicy("CorsPolicy", x =>
+    {
+        x.AllowAnyHeader();
+        x.AllowAnyMethod();
+        x.AllowAnyOrigin();
+    });
+});
 
 var app = builder.Build();
 
@@ -25,6 +34,6 @@ if (!app.Environment.IsDevelopment())
 // app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors();
+app.UseCors("CorsPolicy");
 
 app.Run();

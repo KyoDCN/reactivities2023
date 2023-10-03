@@ -9,7 +9,7 @@ class ActivityStore {
     selectedActivity: Activity | undefined = undefined;
     editMode = false;
     loading = false;
-    loadingInitial = true;
+    loadingInitial = false;
 
     constructor() {
         makeAutoObservable(this);
@@ -20,28 +20,63 @@ class ActivityStore {
     }
 
     loadActivities = async () => {
+        this.setLoadingInitial(true);
+        
         try {
             const res = await agent.Activities.list();
             res.forEach(activity => {
-                activity.date = activity.date.split('T')[0];
-                this.activityRegistry.set(activity.id, activity);
+                this.setActivity(activity);
             })
             // res.map(x => x.date = x.date.split('T')[0]);
             // this.activities = res;
-            this.setLoadingInitial(false);
         } catch (error) {
             console.log(error);
+        } finally {
             this.setLoadingInitial(false);
         }
+    }
+
+    loadActivity = async (id: string): Promise<Activity | undefined> => {
+        let activity = this.getActivity(id);
+        
+        if(activity) {
+            this.setSelectedActivity(activity);
+        } else {
+            this.setLoadingInitial(true);
+            try {
+                activity = await agent.Activities.details(id);
+                this.setActivity(activity);
+                this.setSelectedActivity(activity);
+            } catch (error) {
+                console.log(error);
+            } finally {
+                this.setLoadingInitial(false);
+            }
+        }
+
+        return activity;
+    }
+
+    private getActivity = (id: string) => {
+        return this.activityRegistry.get(id);
+    }
+
+    private setActivity = (activity: Activity) => {
+        activity.date = activity.date.split('T')[0];
+        this.activityRegistry.set(activity.id, activity);
     }
 
     setLoadingInitial = (state: boolean) => {
         this.loadingInitial = state;
     }
 
+    setSelectedActivity = (activity: Activity | undefined) => {
+        this.selectedActivity = activity;
+    }
+
     selectActivity = (id: string) => {
         //this.selectedActivity = this.activities.find(x => x.id === id);
-        this.selectedActivity = this.activityRegistry.get(id);
+        this.setSelectedActivity(this.activityRegistry.get(id));
     }
 
     cancelSelectedActivity = () => {
@@ -65,7 +100,7 @@ class ActivityStore {
             runInAction(() => {
                 //this.activities.push(activity);
                 this.activityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
+                this.setSelectedActivity(activity);
                 this.editMode = false;
                 this.loading = false;
             })
@@ -84,7 +119,7 @@ class ActivityStore {
             runInAction(() => {
                 // this.activities = [...this.activities.filter(x => x.id !== activity.id), activity];
                 this.activityRegistry.set(activity.id, activity);
-                this.selectedActivity = activity;
+                this.setSelectedActivity(activity);
                 this.editMode = false;
                 this.loading = false;
             })

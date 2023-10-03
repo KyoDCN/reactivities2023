@@ -2,15 +2,28 @@ import React, { ChangeEvent, useEffect, useState } from 'react'
 import { Button, Form, Segment } from 'semantic-ui-react'
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import LoadingComponent from '../../../app/layouts/LoadingComponent';
+import {v4 as uuid} from 'uuid';
 
 interface Props {
 }
 
 function ActivityForm({}: Props) {
     const {activityStore} = useStore();
-    const {selectedActivity, closeForm, createActivity, updateActivity, loading: submitting} = activityStore;
+    const {
+        selectedActivity, 
+        createActivity, 
+        updateActivity, 
+        loading: submitting, 
+        loadActivity, 
+        loadingInitial
+    } = activityStore;
 
-    const initialState = selectedActivity ?? {
+    const {id} = useParams();
+    const navigate = useNavigate();
+
+    const [activity, setActivity] = useState({
         id: '',
         title: '',
         category: '',
@@ -18,12 +31,26 @@ function ActivityForm({}: Props) {
         date: '',
         city: '',
         venue: ''
-    }
+    });
 
-    const [activity, setActivity] = useState(initialState);
+    useEffect(() => {
+        if(id) {
+            loadActivity(id)
+                .then(activity => {
+                    if(activity) setActivity(activity);
+                })
+        } 
+    }, [id, loadActivity])
 
-    function handleSubmit() {
-        activity.id ? updateActivity(activity) : createActivity(activity);
+    async function handleSubmit() {
+        if(!activity.id) {
+            activity.id = uuid();
+            await createActivity(activity);
+        } else {
+            await updateActivity(activity);
+        }
+        
+        navigate(`/activities/${activity.id}`)
     }
 
     function handleInputChange(event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
@@ -31,9 +58,7 @@ function ActivityForm({}: Props) {
         setActivity({...activity, [name]: value });
     }
 
-    useEffect(() => {
-        console.log(activity);
-    }, [activity]);
+    if(loadingInitial) return <LoadingComponent content='Loading  ...'/>;
 
     return (
         <Segment clearing>
@@ -45,7 +70,7 @@ function ActivityForm({}: Props) {
                 <Form.Input placeholder='City' value={activity.city} name='city' onChange={handleInputChange}  />
                 <Form.Input placeholder='Venue' value={activity.venue} name='venue' onChange={handleInputChange}  />
                 <Button loading={submitting} floated='right' positive type='submit' content='Submit'/>
-                <Button onClick={closeForm} floated='right' positive type='button' content='Cancel'/>
+                <Button as={Link} to='/activities' floated='right' positive type='button' content='Cancel'/>
             </Form>
         </Segment>
     )

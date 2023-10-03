@@ -3,6 +3,7 @@ import { Activity } from '../../../app/models/activity'
 import { Button, Item, Label, Segment } from 'semantic-ui-react'
 import { useStore } from '../../../app/stores/store';
 import { observer } from 'mobx-react-lite';
+import { Link } from 'react-router-dom';
 
 interface Props {
 }
@@ -32,7 +33,13 @@ function ActivityList({}: Props) {
                                 <div>{activity.city}, {activity.venue}</div>
                             </Item.Description>
                             <Item.Extra>
-                                <Button onClick={() => activityStore.selectActivity(activity.id)} floated='right' content='View' color='blue'/>
+                                <Button 
+                                    as={Link} 
+                                    to={`/activities/${activity.id}`} 
+                                    floated='right' 
+                                    content='View' 
+                                    color='blue'
+                                />
                                 <Button 
                                     name={activity.id}
                                     loading={submitting && target === activity.id} 

@@ -1,4 +1,6 @@
-﻿using Reactivities.Application;
+﻿using FluentValidation;
+using FluentValidation.AspNetCore;
+using Reactivities.Application;
 using Reactivities.Persistence;
 
 namespace Reactivities.Server.Core.Extensions
@@ -9,14 +11,6 @@ namespace Reactivities.Server.Core.Extensions
         {
             services.AddDbContext<DataContext>();
 
-            services.AddMediatR(c =>
-            {
-                c.RegisterServicesFromAssembly(typeof(ApplicationEntry).Assembly);
-            });
-
-            services.AddAutoMapper(typeof(ApplicationEntry).Assembly);
-
-
             services.AddCors(o =>
             {
                 o.DefaultPolicyName = "default";
@@ -25,6 +19,15 @@ namespace Reactivities.Server.Core.Extensions
                     policy.AllowAnyHeader().AllowAnyOrigin().AllowAnyOrigin();
                 });
             });
+
+            services.AddMediatR(c =>
+            {
+                c.RegisterServicesFromAssembly(typeof(ApplicationEntry).Assembly);
+            });
+
+            services.AddAutoMapper(typeof(ApplicationEntry).Assembly);
+            services.AddFluentValidationAutoValidation();
+            services.AddValidatorsFromAssembly(typeof(ApplicationEntry).Assembly);
 
             return services;
         }

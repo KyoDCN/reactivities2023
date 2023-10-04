@@ -1,4 +1,5 @@
-﻿using MediatR;
+﻿using FluentValidation;
+using MediatR;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
@@ -10,6 +11,14 @@ namespace Reactivities.Application.Activities
         {
             public class Create : Activity, IRequest
             { 
+            }
+
+            public class CreateValidator : AbstractValidator<Create>
+            {
+                public CreateValidator()
+                {
+                    RuleFor(x => x).SetValidator(new ActivityValidator());
+                }
             }
 
             private class CreateHandler : IRequestHandler<Create>

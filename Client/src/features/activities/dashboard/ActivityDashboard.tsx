@@ -1,11 +1,10 @@
 import { Grid } from "semantic-ui-react";
 import ActivityList from "./ActivityList";
-import ActivityDetails from "../details/ActivityDetails";
-import ActivityForm from "../form/ActivityForm";
 import { useStore } from "../../../app/stores/store";
 import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import LoadingComponent from "../../../app/layouts/LoadingComponent";
+import ActivityFilters from "./ActivityFilters";
 
 interface Props {
 }
@@ -25,11 +24,11 @@ function ActivityDashboard({}: Props) {
 
   return (
     <Grid>
-      <Grid.Column width={10}>
+      <Grid.Column width='10'>
         <ActivityList />
       </Grid.Column>
-      <Grid.Column width={6}>
-        <h2>Activity filters</h2>
+      <Grid.Column width='6'>
+        <ActivityFilters />
       </Grid.Column>
     </Grid>
   )

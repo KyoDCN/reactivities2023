@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Reactivities.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
@@ -9,11 +10,11 @@ namespace Reactivities.Application.Activities
     {
         public partial class Queries
         {
-            public class GetAll : IRequest<List<Activity>>
+            public class GetAll : IRequest<Result<List<Activity>>>
             {
             }
 
-            private class GetAllHandler : IRequestHandler<GetAll, List<Activity>>
+            private class GetAllHandler : IRequestHandler<GetAll, Result<List<Activity>>>
             {
                 private readonly DataContext _context;
 
@@ -22,9 +23,9 @@ namespace Reactivities.Application.Activities
                     _context = context;
                 }
 
-                async Task<List<Activity>> IRequestHandler<GetAll, List<Activity>>.Handle(GetAll request, CancellationToken cancellationToken)
+                async Task<Result<List<Activity>>> IRequestHandler<GetAll, Result<List<Activity>>>.Handle(GetAll request, CancellationToken cancellationToken)
                 {
-                    return await _context.Activities.ToListAsync(cancellationToken);
+                    return Result<List<Activity>>.Success(await _context.Activities.ToListAsync(cancellationToken));
                 }
             }
         }

@@ -1,4 +1,5 @@
 using Reactivities.Server.Core.Extensions;
+using Reactivities.Server.Core.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +18,8 @@ builder.Services.AddCors(x =>
 });
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.MigrateEFDatabase();
 app.SeedTestData();

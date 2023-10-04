@@ -2,6 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Reactivities.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
@@ -11,11 +12,11 @@ namespace Reactivities.Application.Activities
     {
         public partial class Commands
         {
-            public class Delete : Activity, IRequest
+            public class Delete : Activity, IRequest<Result<Unit>>
             {
             }
 
-            private class DeleteHandler : IRequestHandler<Delete>
+            private class DeleteHandler : IRequestHandler<Delete, Result<Unit>>
             {
                 private readonly DataContext _context;
                 private readonly IMapper _mapper;
@@ -28,18 +29,19 @@ namespace Reactivities.Application.Activities
                     _logger = logger;
                 }
 
-                public async Task Handle(Delete request, CancellationToken cancellationToken)
+                public async Task<Result<Unit>> Handle(Delete request, CancellationToken cancellationToken)
                 {
                     var activity = await _context.Activities.SingleOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
-                    if (activity == null)
-                    {
-                        return;
-                    }
+                    if (activity == null) return null;
 
                     _context.Activities.Remove(activity);
 
-                    await _context.SaveChangesAsync(cancellationToken);
+                    var result = await _context.SaveChangesAsync(cancellationToken) > 0;
+
+                    if (!result) return Result<Unit>.Failure("Failed to delete the activity");
+
+                    return Result<Unit>.Success(Unit.Value);
                 }
             }
         }

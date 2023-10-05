@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Storage;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
@@ -13,7 +15,14 @@ namespace Reactivities.Server.Core.Extensions
 
             var logger = scope.ServiceProvider.GetRequiredService<ILogger<WebApplication>>();
 
-            var pendingMigrations = context.Database.GetPendingMigrations();
+            bool hasTables = context.Database.GetService<IRelationalDatabaseCreator>().HasTables();
+
+            if (!hasTables)
+            {
+                context.Database.Migrate();
+            }
+
+            IEnumerable<string> pendingMigrations = context.Database.GetPendingMigrations();
 
             if (pendingMigrations.Any())
             {

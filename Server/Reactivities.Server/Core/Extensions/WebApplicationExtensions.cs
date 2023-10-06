@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage;
 using Reactivities.Domain;
@@ -8,7 +9,7 @@ namespace Reactivities.Server.Core.Extensions
 {
     public static class WebApplicationExtensions
     {
-        public static WebApplication MigrateEFDatabase(this WebApplication app)
+        public static async Task<WebApplication> MigrateEFDatabaseAsync(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
             using var context = scope.ServiceProvider.GetRequiredService<DataContext>();
@@ -19,7 +20,7 @@ namespace Reactivities.Server.Core.Extensions
 
             if (!hasTables)
             {
-                context.Database.Migrate();
+                await context.Database.MigrateAsync();
             }
 
             IEnumerable<string> pendingMigrations = context.Database.GetPendingMigrations();
@@ -31,7 +32,7 @@ namespace Reactivities.Server.Core.Extensions
 
                 try
                 {
-                    context.Database.Migrate();
+                    await context.Database.MigrateAsync();
 
                     var lastAppliedMigration = context.Database.GetAppliedMigrations().LastOrDefault();
                     Console.WriteLine($"\nCurrent schema version: {lastAppliedMigration}\n");
@@ -46,10 +47,26 @@ namespace Reactivities.Server.Core.Extensions
             return app;
         }
 
-        public static WebApplication SeedTestData(this WebApplication app)
+        public static async Task<WebApplication> SeedTestDataAsync(this WebApplication app)
         {
             using var scope = app.Services.CreateScope();
             using var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+
+            using var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+
+            if (userManager.Users.Any()) return app;
+
+            var users = new List<ApplicationUser>
+            {
+                new ApplicationUser{DisplayName = "Bob", UserName = "bob", Email = "bob@test.com"},
+                new ApplicationUser{DisplayName = "Tom", UserName = "tom", Email = "tom@test.com"},
+                new ApplicationUser{DisplayName = "Jane", UserName = "jane", Email = "jane@test.com"},
+            };
+
+            foreach(var user in users)
+            {
+                await userManager.CreateAsync(user, "Pa$$w0rd");
+            }
 
             if (context.Activities.Any()) return app;
 

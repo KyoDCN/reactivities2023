@@ -1,9 +1,17 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Reactivities.Server.Core.Extensions;
 using Reactivities.Server.Core.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
+builder.Services.AddControllers(o =>
+{
+    var policy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+    // applies authorization policy to all API controllers
+    o.Filters.Add(new AuthorizeFilter(policy));
+});
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddApplicationServices(builder.Configuration);
@@ -37,8 +45,10 @@ if (!app.Environment.IsDevelopment())
 }
 
 // app.UseHttpsRedirection();
+app.UseCors("CorsPolicy");
+
+app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.UseCors("CorsPolicy");
 
 app.Run();

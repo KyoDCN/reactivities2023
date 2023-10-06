@@ -1,10 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Reactivities.Application.Activities;
 
 namespace Reactivities.Server.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [AllowAnonymous]
     public class ActivitiesController : BaseController
     {
         [HttpGet]

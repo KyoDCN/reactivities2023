@@ -19,12 +19,10 @@ interface Props {
 
 function ActivityForm({}: Props) {
     const {activityStore} = useStore();
-    
     const {
-        selectedActivity, 
         createActivity, 
         updateActivity, 
-        loading: submitting, 
+        loading, 
         loadActivity, 
         loadingInitial
     } = activityStore;
@@ -41,7 +39,6 @@ function ActivityForm({}: Props) {
         city: '',
         venue: ''
     }
-
     const [activity, setActivity] = useState(activityObj);
 
     const validationSchema = Yup.object({
@@ -101,7 +98,7 @@ function ActivityForm({}: Props) {
                         <MyTextInput placeholder='Venue' name='venue' />
                         <Button
                             disabled={isSubmitting || !dirty || !isValid}
-                            loading={submitting}
+                            loading={loading}
                             floated='right' 
                             positive type='submit' 
                             content='Submit'

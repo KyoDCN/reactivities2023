@@ -4,7 +4,6 @@ using Reactivities.Application.Activities;
 
 namespace Reactivities.Server.Controllers
 {
-    [AllowAnonymous]
     public class ActivitiesController : BaseController
     {
         [HttpGet]
@@ -32,17 +31,28 @@ namespace Reactivities.Server.Controllers
             return HandleResult(result);
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(Activities.Commands.Update command)
+        [Authorize(Policy = "IsActivityHost")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(Activities.Commands.Update command, Guid id)
         {
+            command.Id = id;
             var result = await Mediator.Send(command);
             return HandleResult(result);
         }
 
+        [Authorize(Policy = "IsActivityHost")]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             var command = new Activities.Commands.Delete() { Id = id };
+            var result = await Mediator.Send(command);
+            return HandleResult(result);
+        }
+
+        [HttpPost("{id}/attend")]
+        public async Task<IActionResult> Attend(Guid id)
+        {
+            var command = new Activities.Commands.UpdateAttendance { Id = id };
             var result = await Mediator.Send(command);
             return HandleResult(result);
         }

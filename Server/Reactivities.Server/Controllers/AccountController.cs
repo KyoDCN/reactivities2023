@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.EntityFrameworkCore;
 using Reactivities.Domain;
 using Reactivities.Server.DataTransferObjects;
@@ -47,21 +48,19 @@ namespace Reactivities.Server.Controllers
         [HttpPost("register")]
         public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
-            List<string> errors = new();
-
             if(await _userManager.Users.AnyAsync(x => x.UserName == registerDTO.Username))
             {
-                errors.Add("Username is already taken.");
+                ModelState.AddModelError("username", "Username is already taken.");
             }
 
             if (await _userManager.Users.AnyAsync(x => x.Email == registerDTO.Email))
             {
-                errors.Add("Email is already taken.");
+                ModelState.AddModelError("email", "Email is already taken.");
             }
 
-            if(errors.Any())
+            if(ModelState.ErrorCount > 0)
             {
-                return BadRequest(errors);
+                return ValidationProblem();
             }
 
             var user = new ApplicationUser

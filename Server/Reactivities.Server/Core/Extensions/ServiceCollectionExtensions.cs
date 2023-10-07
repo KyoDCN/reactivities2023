@@ -1,6 +1,8 @@
 ﻿using FluentValidation;
 using FluentValidation.AspNetCore;
 using Reactivities.Application;
+using Reactivities.Application.Interfaces;
+using Reactivities.Infrastructure.Security;
 using Reactivities.Persistence;
 
 namespace Reactivities.Server.Core.Extensions
@@ -28,6 +30,8 @@ namespace Reactivities.Server.Core.Extensions
             services.AddAutoMapper(typeof(ApplicationEntry).Assembly);
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(ApplicationEntry).Assembly);
+            services.AddHttpContextAccessor();
+            services.AddScoped<IUserAccessor, UserAccessor>();
 
             return services;
         }

@@ -1,4 +1,4 @@
-import axios, { AxiosError, AxiosResponse } from 'axios';
+import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
 import { Activity } from '../models/activity';
 import { toast } from 'react-toastify';
 import { router } from '../router/Routes';
@@ -60,6 +60,12 @@ axios.interceptors.response.use(async (response) => {
     return Promise.reject(error);
 })
 
+axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    const token = store.commonStore.token;
+    if(token) config.headers.Authorization = `Bearer ${token}`;
+    return config;
+})
+
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
 const requests = {
@@ -79,8 +85,8 @@ const Activities = {
 
 const Accounts = {
     current: () => requests.get<User>('/account'),
-    login: (user: UserFormValues) => requests.post("/account/login", user),
-    register: (user: UserFormValues) => requests.post("/account/register", user)
+    login: (user: UserFormValues) => requests.post<User>("/account/login", user),
+    register: (user: UserFormValues) => requests.post<User>("/account/register", user)
 }
 
 const agent = {

@@ -18,6 +18,7 @@ namespace Reactivities.Persistence
         }
 
         public DbSet<Activity> Activities { get; set; }
+        public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -29,6 +30,20 @@ namespace Reactivities.Persistence
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
+
+            // Many to Many relationship
+            modelBuilder.Entity<ActivityAttendee>(x => x.HasKey(a => new { a.ApplicationUserId, a.ActivityId }));
+
+            modelBuilder.Entity<ActivityAttendee>()
+                .HasOne(x => x.ApplicationUser)
+                .WithMany(x => x.Activities)
+                .HasForeignKey(x => x.ApplicationUserId);
+
+            modelBuilder.Entity<ActivityAttendee>()
+                .HasOne(x => x.Activity)
+                .WithMany(x => x.Attendees)
+                .HasForeignKey(x => x.ActivityId);
         }
     }
 }

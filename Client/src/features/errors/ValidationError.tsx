@@ -2,10 +2,10 @@ import { observer } from "mobx-react-lite";
 import { Message } from "semantic-ui-react";
 
 interface Props {
-    errors: string[];
+    errors: string[] | undefined;
 }
 
-function ValidationError({errors}: Props) {
+export default observer(function ValidationError({errors}: Props) {
     return (
         <Message error>
             {errors && (
@@ -17,6 +17,4 @@ function ValidationError({errors}: Props) {
             )}
         </Message>        
     )
-}
-
-export default observer(ValidationError);
+});

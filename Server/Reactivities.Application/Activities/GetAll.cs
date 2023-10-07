@@ -1,4 +1,6 @@
-﻿using MediatR;
+﻿using AutoMapper;
+using AutoMapper.QueryableExtensions;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Reactivities.Core;
 using Reactivities.Domain;
@@ -10,22 +12,28 @@ namespace Reactivities.Application.Activities
     {
         public partial class Queries
         {
-            public class GetAll : IRequest<Result<List<Activity>>>
+            public class GetAll : IRequest<Result<List<ActivityDTO>>>
             {
             }
 
-            private class GetAllHandler : IRequestHandler<GetAll, Result<List<Activity>>>
+            private class GetAllHandler : IRequestHandler<GetAll, Result<List<ActivityDTO>>>
             {
                 private readonly DataContext _context;
+                private readonly IMapper _mapper;
 
-                public GetAllHandler(DataContext context)
+                public GetAllHandler(DataContext context, IMapper mapper)
                 {
                     _context = context;
+                    _mapper = mapper;
                 }
 
-                async Task<Result<List<Activity>>> IRequestHandler<GetAll, Result<List<Activity>>>.Handle(GetAll request, CancellationToken cancellationToken)
+                async Task<Result<List<ActivityDTO>>> IRequestHandler<GetAll, Result<List<ActivityDTO>>>.Handle(GetAll request, CancellationToken cancellationToken)
                 {
-                    return Result<List<Activity>>.Success(await _context.Activities.ToListAsync(cancellationToken));
+                    var activities = await _context.Activities
+                        .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider)
+                        .ToListAsync(cancellationToken);
+
+                    return Result<List<ActivityDTO>>.Success(activities);
                 }
             }
         }

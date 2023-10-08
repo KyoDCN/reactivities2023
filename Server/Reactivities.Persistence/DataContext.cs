@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Reactivities.Domain;
+using Reactivities.Persistence.EntityTypeConfigurations;
 
 namespace Reactivities.Persistence
 {
@@ -31,19 +32,7 @@ namespace Reactivities.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-
-            // Many to Many relationship
-            modelBuilder.Entity<ActivityAttendee>(x => x.HasKey(a => new { a.ApplicationUserId, a.ActivityId }));
-
-            modelBuilder.Entity<ActivityAttendee>()
-                .HasOne(x => x.ApplicationUser)
-                .WithMany(x => x.Activities)
-                .HasForeignKey(x => x.ApplicationUserId);
-
-            modelBuilder.Entity<ActivityAttendee>()
-                .HasOne(x => x.Activity)
-                .WithMany(x => x.Attendees)
-                .HasForeignKey(x => x.ActivityId);
+            new ActivityAttendeeEntityTypeConfiguration().Configure(modelBuilder.Entity<ActivityAttendee>());
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Reactivities.Domain
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace Reactivities.Domain
 {
     public class ActivityAttendee
     {

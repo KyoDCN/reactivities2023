@@ -12,11 +12,11 @@ interface Props {
 function ActivityDashboard({}: Props) {
 
   const {activityStore} = useStore();
-  const {loadActivities, activityRegistry} = activityStore;
+  const {loadActivities} = activityStore;
 
   useEffect(() => {
-    if(activityRegistry.size === 0) loadActivities();
-  }, [loadActivities])
+    loadActivities();
+  }, [])
 
   if(activityStore.loadingInitial) {
     return <LoadingComponent content='Loading activities ...' />

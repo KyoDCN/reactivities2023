@@ -1,5 +1,5 @@
 import axios, { AxiosError, AxiosRequestHeaders, AxiosResponse, InternalAxiosRequestConfig } from 'axios';
-import { Activity } from '../models/activity';
+import { Activity, ActivityFormValues } from '../models/activity';
 import { toast } from 'react-toastify';
 import { router } from '../router/Routes';
 import { store } from '../stores/store';
@@ -17,22 +17,22 @@ axios.interceptors.response.use(async (response) => {
     await sleep(1000);
     return response;
 }, (error: AxiosError) => {
-    if(!error.response) {
+    if (!error.response) {
         return Promise.reject(error);
     }
 
-    const {data, status, config}: AxiosResponse = error.response;
-    
-    switch(status) {
+    const { data, status, config }: AxiosResponse = error.response;
+
+    switch (status) {
         case 400:
-            if(config.method === "get" && data.errors.hasOwnProperty("id")) {
+            if (config.method === "get" && data.errors.hasOwnProperty("id")) {
                 router.navigate("/not-found");
             }
 
-            if(data.errors) {
+            if (data.errors) {
                 const modalStateErrors = [];
-                for(const key in data.errors) {
-                    if(data.errors[key]) {
+                for (const key in data.errors) {
+                    if (data.errors[key]) {
                         modalStateErrors.push(data.errors[key]);
                     }
                 }
@@ -62,13 +62,13 @@ axios.interceptors.response.use(async (response) => {
 
 axios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const token = store.commonStore.token;
-    if(token) config.headers.Authorization = `Bearer ${token}`;
+    if (token) config.headers.Authorization = `Bearer ${token}`;
     return config;
 })
 
 const responseBody = <T>(response: AxiosResponse<T>) => response.data;
 
-const requests = {
+const request = {
     get: <T>(url: string) => axios.get<T>(url).then(responseBody),
     post: <T>(url: string, body: {}) => axios.post<T>(url, body).then(responseBody),
     put: <T>(url: string, body: {}) => axios.put<T>(url, body).then(responseBody),
@@ -76,17 +76,18 @@ const requests = {
 }
 
 const Activities = {
-    list: () => requests.get<Activity[]>('/activities'),
-    details: (id: string) => requests.get<Activity>(`/activities/${id}`),
-    create: (activitiy: Activity) => axios.post<void>('/activities', activitiy),
-    update: (activity: Activity) => axios.put<void>('/activities', activity),
-    delete: (id: string) => axios.delete<void>(`/activities/${id}`)
+    list: () => request.get<Activity[]>('/activities'),
+    details: (id: string) => request.get<Activity>(`/activities/${id}`),
+    create: (activitiy: ActivityFormValues) => request.post<void>('/activities', activitiy),
+    update: (activity: ActivityFormValues) => request.put<void>('/activities', activity),
+    delete: (id: string) => request.delete<void>(`/activities/${id}`),
+    attend: (id: string) => request.post<void>(`/activities/${id}/attend`, {})
 }
 
 const Accounts = {
-    current: () => requests.get<User>('/account'),
-    login: (user: UserFormValues) => requests.post<User>("/account/login", user),
-    register: (user: UserFormValues) => requests.post<User>("/account/register", user)
+    current: () => request.get<User>('/account'),
+    login: (user: UserFormValues) => request.post<User>("/account/login", user),
+    register: (user: UserFormValues) => request.post<User>("/account/register", user)
 }
 
 const agent = {

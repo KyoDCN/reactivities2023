@@ -21,7 +21,7 @@ function ActivityDetails({}: Props) {
         if(id) loadActivity(id);
     }, [id, loadActivity])
 
-    if(!activity || loadingInitial) return <LoadingComponent content='Loading ...' />;
+    if(!activity || loadingInitial) return <LoadingComponent content='Loading activity ...' />;
 
     return (
         <Grid>
@@ -31,7 +31,7 @@ function ActivityDetails({}: Props) {
                 <ActivityDetailedChat/>
             </Grid.Column>
             <Grid.Column width={6}>
-                <ActivityDetailedSideBar />
+                <ActivityDetailedSideBar activity={activity} />
             </Grid.Column>
         </Grid>
     )

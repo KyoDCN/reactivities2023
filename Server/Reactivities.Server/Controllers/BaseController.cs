@@ -1,6 +1,6 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using Reactivities.Core;
+using Reactivities.Application.Core;
 
 namespace Reactivities.Server.Controllers
 {

@@ -1,8 +1,8 @@
 ﻿using FluentValidation;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Reactivities.Application.Core;
 using Reactivities.Application.Interfaces;
-using Reactivities.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 

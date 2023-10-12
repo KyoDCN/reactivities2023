@@ -2,6 +2,7 @@
 using FluentValidation.AspNetCore;
 using Reactivities.Application;
 using Reactivities.Application.Interfaces;
+using Reactivities.Infrastructure.Photos;
 using Reactivities.Infrastructure.Security;
 using Reactivities.Persistence;
 
@@ -31,7 +32,16 @@ namespace Reactivities.Server.Core.Extensions
             services.AddFluentValidationAutoValidation();
             services.AddValidatorsFromAssembly(typeof(ApplicationEntry).Assembly);
             services.AddHttpContextAccessor();
+
             services.AddScoped<IUserAccessor, UserAccessor>();
+            services.AddScoped<IPhotoAccessor, PhotoAccessor>();
+            
+            services.Configure<CloudinarySettings>(x =>
+            {
+                x.CloudName = config["Cloudinary:CloudName"];
+                x.API.Key = config["Cloudinary:Key"];
+                x.API.Secret = config["Cloudinary:Secret"];
+            });
 
             return services;
         }

@@ -20,6 +20,7 @@ namespace Reactivities.Persistence
 
         public DbSet<Activity> Activities { get; set; }
         public DbSet<ActivityAttendee> ActivityAttendees { get; set; }
+        public DbSet<Photo> Photos { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -32,7 +33,20 @@ namespace Reactivities.Persistence
         {
             base.OnModelCreating(modelBuilder);
 
-            new ActivityAttendeeEntityTypeConfiguration().Configure(modelBuilder.Entity<ActivityAttendee>());
+            //new ActivityAttendeeEntityTypeConfiguration().Configure(modelBuilder.Entity<ActivityAttendee>());
+
+            modelBuilder.Entity<ActivityAttendee>()
+                .HasKey(a => new { a.ApplicationUserId, a.ActivityId });
+
+            modelBuilder.Entity<ActivityAttendee>()
+                .HasOne(x => x.ApplicationUser)
+                .WithMany(x => x.Activities)
+                .HasForeignKey(x => x.ApplicationUserId);
+
+            modelBuilder.Entity<ActivityAttendee>()
+                .HasOne(x => x.Activity)
+                .WithMany(x => x.Attendees)
+                .HasForeignKey(x => x.ActivityId);
         }
     }
 }

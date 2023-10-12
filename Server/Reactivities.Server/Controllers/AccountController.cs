@@ -27,7 +27,7 @@ namespace Reactivities.Server.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> Login(LoginDTO loginDTO)
         {
-            var user = await _userManager.FindByEmailAsync(loginDTO.Email);
+            var user = await _userManager.Users.Include(p => p.Photos).SingleOrDefaultAsync(x => x.Email == loginDTO.Email);
 
             if (user == null)
             {
@@ -83,17 +83,22 @@ namespace Reactivities.Server.Controllers
         [HttpGet]
         public async Task<ActionResult<UserDTO>> GetCurrentUser()
         {
-            var user = await _userManager.FindByEmailAsync(User.FindFirstValue(ClaimTypes.Email));
+            var user = await _userManager.Users.Include(x => x.Photos).SingleOrDefaultAsync(x => x.Email == User.FindFirstValue(ClaimTypes.Email));
 
             return CreateUserDTO(user);
         }
 
-        private UserDTO CreateUserDTO(ApplicationUser user) => new()
+        private UserDTO CreateUserDTO(ApplicationUser user)
         {
-            DisplayName = user.DisplayName,
-            Image = null,
-            Token = _tokenService.CreateToken(user),
-            Username = user.UserName
-        };
+            UserDTO newUser = new()
+            {
+                DisplayName = user.DisplayName,
+                Image = user.Photos.FirstOrDefault(x => x.IsMain)?.Url,
+                Token = _tokenService.CreateToken(user),
+                Username = user.UserName
+            };
+
+            return newUser;
+        }
     }
 }

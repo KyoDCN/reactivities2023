@@ -1,7 +1,7 @@
 ﻿using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Reactivities.Core;
+using Reactivities.Application.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 

@@ -2,8 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Reactivities.Core;
-using Reactivities.Domain;
+using Reactivities.Application.Core;
 using Reactivities.Persistence;
 
 namespace Reactivities.Application.Activities

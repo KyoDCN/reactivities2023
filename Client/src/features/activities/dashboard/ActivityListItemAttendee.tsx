@@ -12,12 +12,12 @@ interface Props {
 export default observer(function ActivityListItemAttendee({attendees}: Props) {
     return (
         <List horizontal>
-            {attendees.map((attendee) => (<>
+            {attendees.map((attendee, i) => 
                 <Popup
+                    key={i}
                     hoverable
-                    key={attendee.username}
                     trigger={
-                        <List.Item key={attendee.username} as={Link} to={`/profiles/${attendee.username}`}>
+                        <List.Item as={Link} to={`/profiles/${attendee.username}`}>
                             <Image size="mini" circular src={attendee.image || "/assets/user.png"}/>
                         </List.Item>
                     }
@@ -26,7 +26,7 @@ export default observer(function ActivityListItemAttendee({attendees}: Props) {
                         <ProfileCard profile={attendee} />
                     </Popup.Content>
                 </Popup>
-            </>))}
+            )}
         </List>
     )
 })

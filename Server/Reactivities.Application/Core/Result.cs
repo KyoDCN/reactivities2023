@@ -1,4 +1,4 @@
-﻿namespace Reactivities.Core
+﻿namespace Reactivities.Application.Core
 {
     public class Result<T>
     {

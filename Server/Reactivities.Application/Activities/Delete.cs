@@ -2,7 +2,7 @@
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Reactivities.Core;
+using Reactivities.Application.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 

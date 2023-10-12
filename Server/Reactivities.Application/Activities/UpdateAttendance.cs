@@ -1,14 +1,9 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Reactivities.Application.Core;
 using Reactivities.Application.Interfaces;
-using Reactivities.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Reactivities.Application.Activities
 {

@@ -7,7 +7,7 @@ using Reactivities.Persistence;
 
 namespace Reactivities.Server.Core.Extensions
 {
-    public static class WebApplicationExtensions
+    public static class SeedMigrationExtensions
     {
         public static async Task<WebApplication> MigrateEFDatabaseAsync(this WebApplication app)
         {

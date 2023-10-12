@@ -2,7 +2,7 @@
 using AutoMapper.QueryableExtensions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Reactivities.Core;
+using Reactivities.Application.Core;
 using Reactivities.Domain;
 using Reactivities.Persistence;
 
@@ -27,11 +27,12 @@ namespace Reactivities.Application.Activities
                     _mapper = mapper;
                 }
 
-                async Task<Result<List<ActivityDTO>>> IRequestHandler<GetAll, Result<List<ActivityDTO>>>.Handle(GetAll request, CancellationToken cancellationToken)
+                public async Task<Result<List<ActivityDTO>>> Handle(GetAll request, CancellationToken cancellationToken)
                 {
-                    var activities = await _context.Activities
-                        .ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider)
-                        .ToListAsync(cancellationToken);
+                    var activities = await _context.Activities.ProjectTo<ActivityDTO>(_mapper.ConfigurationProvider).ToListAsync();
+
+                    // var result = _mapper.Map<List<ActivityDTO>>(activities);
+                    
 
                     return Result<List<ActivityDTO>>.Success(activities);
                 }
